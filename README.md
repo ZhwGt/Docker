@@ -96,15 +96,31 @@ clean:
 ```
 
 ### 展示图
+编译
 ![image](https://user-images.githubusercontent.com/51261084/135480095-c43639c5-3d55-4647-b172-f413fd8ad69e.png)
+
+启动容器
 ![image](https://user-images.githubusercontent.com/51261084/135480276-d1a5a186-68b0-4738-ac02-86db1d35c1e2.png)
+
+主机名（容器）
 ![image](https://user-images.githubusercontent.com/51261084/135481914-2bb0afa3-3cdc-4762-8661-805d544c4ad1.png)
-![image](https://user-images.githubusercontent.com/51261084/135482028-1e1c3d63-220d-4b32-9eaa-da44dc8ee2b2.png)![image](https://user-images.githubusercontent.com/51261084/135482118-c96119b4-ef6e-4c3d-ab37-1dd5a4cab95f.png)
+
+容器网卡
+![image](https://user-images.githubusercontent.com/51261084/135482028-1e1c3d63-220d-4b32-9eaa-da44dc8ee2b2.png)
+
+登录设备，文件系统
+![image](https://user-images.githubusercontent.com/51261084/135482118-c96119b4-ef6e-4c3d-ab37-1dd5a4cab95f.png)
+
+测试连接外网baidu
 ![image](https://user-images.githubusercontent.com/51261084/135482208-dcd3d12f-37a8-447e-b011-74d7cf1fa05b.png)
+
+更新系统
 ![image](https://user-images.githubusercontent.com/51261084/135482843-72d36f27-f4bd-4e8f-b321-ab090db0c1bc.png)
 
-![image](https://user-images.githubusercontent.com/51261084/135483255-7a8e3f6e-17c5-46dc-84fa-2e3e89dbbce8.png)
-
+安装软件
 ![image](https://user-images.githubusercontent.com/51261084/135483390-bb649c23-5571-47d3-b49c-94f284eafb20.png)
+
+卸载软件
+![image](https://user-images.githubusercontent.com/51261084/135483255-7a8e3f6e-17c5-46dc-84fa-2e3e89dbbce8.png)
 
 
