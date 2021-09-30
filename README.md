@@ -35,3 +35,76 @@ fork 在创建一个进程的时候，子进程会完全复制父进程的资源
 * 进程自己的专用堆栈空间.
 * 进程控制块（PCB）.
 * 进程专有的 namespace.
+
+|  namespace分类 | 系统调用参数 |
+|  ----  | ----  |
+|  UTS  |  CLONE_NEWUTS  |
+| Mount | CLONE_NEWNS |
+| PID  | CLONE_NEWPID |
+| Network | CLONE_NEWNET |
+从名字可以看出，CLONE_NEWNS 提供了文件系统相关的挂载，用于复制和文件系统相关的资源，CLONE_NEWUTS 则提供了主机名相关的设置，CLONE_NEWPID 提供了独立的进程空间支持，而 CLONE_NEWNET 则提供了网络相关支持。
+
+```cpp
+int execv(const char *path, char *const argv[]);
+```
+execv 可以通过传入一个 path 来执行 path 中的执行文件，这个系统调用可以让我们的子进程执行 /bin/bash 从而让整个容器保持运行。
+```cpp
+int sethostname(const char *name, size_t len);
+```
+从名字不难看出，这个系统调用能够设置我们的主机名，值得一提的是，由于 C 风格的字符串使用的是指针，不指定长度是无法直接从内部得知字符串长度的，这里 len 起到了获得字符串长度的作用。
+```cpp
+int chdir(const char *path);
+```
+任何一个程序，都会在某个特定的目录下运行。当我们需要访问资源时，就可以通过相对路径而不是绝对路径来访问相关资源。而 chdir 恰好提供给了我们一个便利之处，那就是可以改变我们程序的运行目录，从而达到某些不可描述的目的。
+
+这个系统调用能够用于设置根目录
+```cpp
+int chroot(const char *path);
+```
+这个系统调用用于挂载文件系统，和 mount 这个命令能够达到相同的目的。
+```cpp
+int mount(const char *source, const char *target,
+                 const char *filesystemtype, unsigned long mountflags,
+                 const void *data);
+```
+
+Docker 网络原理
+![image](https://user-images.githubusercontent.com/51261084/135478972-cb33a0bb-5acc-45ff-ae7d-37dccbabcd94.png)
+
+Docker 容器之间的网络通信原理是通过一个网桥 docker0 来实现的。两个容器 container1 和 container2 彼此具备各自的网络设备 eth0，所有的网络请求，都将通过 eth0 向外进行传递。而由于容器生活在子进程中，因此为了让彼此的 eth0 能够互通，那么就需要多创建一对网络设备 veth1 和 veth2，让他们添加到网桥 docker0 上，这样当容器内部的 eth0 向外产生网络访问时，网桥会无条件进行转发，具备路由的功能，从而使容器之间获得网络获得通信的能力。
+
+因此，我们编写的容器要具备网络通信的能力，我们先为容器创建一个需要使用的网桥。而为了方便起见，我们直接使用实验楼环境中的 docker0（也就是实验楼中安装好的 Docker 创建的网桥）
+
+Makefile文件
+```makefile
+C = gcc
+CXX = g++
+C_LIB = network.c nl.c
+C_LINK = network.o nl.o
+MAIN = main.cpp
+LD = -std=c++11
+OUT = docker-run
+
+all:
+        make container
+container:
+        $(C) -c $(C_LIB)
+        $(CXX) $(LD) -o $(OUT) $(MAIN) $(C_LINK)
+clean:
+        rm *.o $(OUT)
+
+```
+
+### 展示图
+![image](https://user-images.githubusercontent.com/51261084/135480095-c43639c5-3d55-4647-b172-f413fd8ad69e.png)
+![image](https://user-images.githubusercontent.com/51261084/135480276-d1a5a186-68b0-4738-ac02-86db1d35c1e2.png)
+![image](https://user-images.githubusercontent.com/51261084/135481914-2bb0afa3-3cdc-4762-8661-805d544c4ad1.png)
+![image](https://user-images.githubusercontent.com/51261084/135482028-1e1c3d63-220d-4b32-9eaa-da44dc8ee2b2.png)![image](https://user-images.githubusercontent.com/51261084/135482118-c96119b4-ef6e-4c3d-ab37-1dd5a4cab95f.png)
+![image](https://user-images.githubusercontent.com/51261084/135482208-dcd3d12f-37a8-447e-b011-74d7cf1fa05b.png)
+![image](https://user-images.githubusercontent.com/51261084/135482843-72d36f27-f4bd-4e8f-b321-ab090db0c1bc.png)
+
+![image](https://user-images.githubusercontent.com/51261084/135483255-7a8e3f6e-17c5-46dc-84fa-2e3e89dbbce8.png)
+
+![image](https://user-images.githubusercontent.com/51261084/135483390-bb649c23-5571-47d3-b49c-94f284eafb20.png)
+
+
